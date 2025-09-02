@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pedagogical Systems</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <meta name="color-scheme" content="light dark">
+</head>
+<body>
+  <header class="app-header" role="banner">
+    <h1 class="app-title">Pedagogical Systems</h1>
+    <nav class="actions" aria-label="Primary">
+      <label class="upload-btn" for="docFile">Upload/Update Document</label>
+      <input id="docFile" type="file" accept=".md,.txt" aria-label="Upload or update document" />
+      <button id="exportBtn" class="ghost">Export</button>
+      <button id="versionsBtn" class="ghost" aria-controls="versionsDrawer" aria-expanded="false">Versions</button>
+      <button id="searchBtn" class="ghost" aria-haspopup="dialog" title="Search (Cmd/Ctrl+K)">Search</button>
+      <button id="orbitBtn" class="ghost" aria-pressed="false" title="Toggle orbit animation">Orbit</button>
+    </nav>
+  </header>
+
+  <main id="main" class="main" role="main">
+    <section id="graphRegion" class="graph-region" role="region" aria-label="Solar graph">
+      <svg id="graph" role="graphics-document" aria-label="Solar system map" tabindex="0"></svg>
+      <div class="zoom-controls">
+        <button id="zoomInBtn" aria-label="Zoom in">+</button>
+        <button id="zoomOutBtn" aria-label="Zoom out">−</button>
+      </div>
+    </section>
+
+    <aside id="panel" class="panel" role="dialog" aria-modal="false" aria-labelledby="panelTitle" hidden>
+      <div class="panel-header">
+        <h2 id="panelTitle"></h2>
+        <div class="panel-actions">
+          <button id="copyMdBtn" class="ghost">Copy as Markdown</button>
+          <button id="closePanelBtn" class="ghost" aria-label="Close panel">Esc</button>
+        </div>
+      </div>
+      <div id="panelTabs" class="tabs" role="tablist" aria-label="Content tabs"></div>
+      <div id="panelContent" class="panel-content"></div>
+    </aside>
+  </main>
+
+  <section id="diffModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="diffTitle" hidden>
+    <div class="modal-body">
+      <h2 id="diffTitle">Update Summary</h2>
+      <pre id="diffReport" class="diff-report" aria-live="polite"></pre>
+      <div class="modal-actions">
+        <button id="confirmUpdateBtn" class="primary">Confirm Update</button>
+        <button id="cancelUpdateBtn" class="ghost">Cancel</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="searchModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle" hidden>
+    <div class="modal-body">
+      <h2 id="searchTitle">Quick Search</h2>
+      <input id="searchInput" type="search" placeholder="Search planets, moons, references…" aria-label="Search" />
+      <ul id="searchResults" class="results" role="listbox" aria-label="Search results"></ul>
+    </div>
+  </section>
+
+  <aside id="versionsDrawer" class="drawer" role="complementary" aria-label="Versions" hidden>
+    <header class="drawer-header">
+      <h2>Versions</h2>
+      <button id="closeVersionsBtn" class="ghost" aria-label="Close versions">Close</button>
+    </header>
+    <ul id="versionsList" class="versions-list"></ul>
+  </aside>
+
+  <section id="printView" class="print-view" aria-hidden="true"></section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm",
+      "marked": "https://cdn.jsdelivr.net/npm/marked@12/+esm"
+    }
+  }
+  </script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
