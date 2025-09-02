@@ -1,9 +1,10 @@
 import { initStore, getCurrent, saveVersion, listVersions, loadVersion, setCurrent } from "./store.js";
 import { parseDocument } from "./parser.js";
 import { computeDiff, applyUpserts, summariseDiff } from "./diff.js";
-import { renderGraph, focusNode, onDoubleClickNode, setContentSource } from "./graph.js";
+import { renderGraph, focusNode, onDoubleClickNode, setContentSource, setOrbiting } from "./graph.js";
 import { openPanel, closePanel, setPanelRenderer, openDiffModal, closeDiffModal, renderVersions, openVersions, closeVersions, openSearch, closeSearch, renderSearchResults, setExportHandlers } from "./ui.js";
 import { buildPrintView, downloadMarkdown } from "./export.js";
+import LZString from "lz-string";
 
 const fileInput = document.getElementById("docFile");
 const diffReportEl = document.getElementById("diffReport");
@@ -16,10 +17,14 @@ const searchBtn = document.getElementById("searchBtn");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 const orbitBtn = document.getElementById("orbitBtn");
+const shareBtn = document.getElementById("shareBtn");
 
 let state = { content: null, diff: null, pendingText: null, versionMeta: null };
 await initStore();
-state.content = await getCurrent();
+const hashData = location.hash.startsWith("#data=") ? location.hash.slice(6) : null;
+if (hashData) {
+  try { state.content = JSON.parse(LZString.decompressFromEncodedURIComponent(hashData) || "null"); } catch {}
+}
 setContentSource(() => state.content);
 
 renderGraph({
@@ -48,6 +53,7 @@ confirmBtn.addEventListener("click", async () => {
   const version = await saveVersion(state.pendingText, upserted);
   await setCurrent(upserted);
   state.content = upserted;
+  location.hash = "data=" + LZString.compressToEncodedURIComponent(JSON.stringify(state.content));
   closeDiffModal();
   renderGraph({ refresh: true, onDoubleClick: (n)=>openPanel(n,state.content) });
   const versions = await listVersions();
@@ -80,6 +86,12 @@ orbitBtn.addEventListener("click", ()=>{
   const on = orbitBtn.getAttribute("aria-pressed") !== "true";
   orbitBtn.setAttribute("aria-pressed", String(on));
   setOrbiting(on);
+});
+shareBtn.addEventListener("click", async ()=>{
+  if (!state.content) return;
+  const url = `${location.origin}${location.pathname}#data=${LZString.compressToEncodedURIComponent(JSON.stringify(state.content))}`;
+  await navigator.clipboard.writeText(url);
+  shareBtn.textContent = "Link copied"; setTimeout(()=> shareBtn.textContent = "Share", 1200);
 });
 
 exportBtn.addEventListener("click", async ()=>{
