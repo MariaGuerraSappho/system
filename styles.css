@@ -8,7 +8,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans",syste
 .app-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e5e7eb;background:var(--bg);position:sticky;top:0;z-index:10}
 .app-title{font-weight:600;letter-spacing:.2px;margin:0}
 .actions{display:flex;gap:8px;align-items:center}
-.upload-btn{border:1px solid #e5e7eb;padding:6px 10px;border-radius:8px;cursor:pointer}
+.upload-btn{display:none; border:1px solid #e5e7eb;padding:6px 10px;border-radius:8px;cursor:pointer}
 #docFile{display:none}
 button{border:1px solid #e5e7eb;background:transparent;color:var(--fg);padding:6px 10px;border-radius:8px;cursor:pointer}
 button.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}

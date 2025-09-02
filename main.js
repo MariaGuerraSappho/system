@@ -16,22 +16,28 @@ const searchBtn = document.getElementById("searchBtn");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 const orbitBtn = document.getElementById("orbitBtn");
-const teacherBtn = document.getElementById("teacherBtn");
 
 let state = { content: null, diff: null, pendingText: null, versionMeta: null };
-await initStore();
-const saved = await getCurrent();
-state.content = saved;
 
-/* hide upload UI for students (no ?teacher=1) */
-const uploadLabel = document.querySelector('label.upload-btn[for="docFile"]');
-const teacherSession = sessionStorage.getItem("teacher") === "1";
-if (!teacherSession && uploadLabel) { uploadLabel.style.display = "none"; }
+await initStore();
+
+async function loadRemote(){
+  try{
+    const res = await fetch(encodeURI("./pedagogical system.md")+"?t="+Date.now(), { cache:"no-store" });
+    if (!res.ok) throw new Error("fetch failed");
+    const text = await res.text();
+    state.content = parseDocument(text);
+  } catch (e){
+    const saved = await getCurrent();
+    state.content = saved;
+  }
+}
+
+await loadRemote();
+
 setContentSource(() => state.content);
 
-renderGraph({
-  onDoubleClick: (node) => openPanel(node, state.content),
-});
+renderGraph({ refresh:true, onDoubleClick: (node) => openPanel(node, state.content) });
 setPanelRenderer({
   onFocus: (nodeId) => focusNode(nodeId),
   getContent: () => state.content,
@@ -87,18 +93,6 @@ orbitBtn.addEventListener("click", ()=>{
   const on = orbitBtn.getAttribute("aria-pressed") !== "true";
   orbitBtn.setAttribute("aria-pressed", String(on));
   setOrbiting(on);
-});
-
-teacherBtn.addEventListener("click", () => {
-  const ok = prompt("Enter teacher password") === "Galina";
-  if (ok) {
-    sessionStorage.setItem("teacher","1");
-    if (uploadLabel) uploadLabel.style.display = "";
-    teacherBtn.textContent = "Teacher ✓";
-    setTimeout(()=> teacherBtn.textContent = "Teacher", 1200);
-  } else {
-    alert("Incorrect password");
-  }
 });
 
 exportBtn.addEventListener("click", async ()=>{
